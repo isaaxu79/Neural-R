@@ -5,12 +5,15 @@ library(MASS); library(neuralnet); library(ggplot2); library(gridExtra);
 datos    <- read.table("prueba_con.csv",header=TRUE, sep=",")
 datos$exito=0
 datos[datos$tasa <= datos$tasa_esperada,]$exito = 1
+datos[datos$tipo_alimento==1,]$tipo_alimento = 1.92
+datos[datos$tipo_alimento==2,]$tipo_alimento = 1.75
+datos[datos$tipo_alimento==3,]$tipo_alimento = 1.80
+
 datos    <- datos[c(2,3,5,6,8,10)]
 n        <- nrow(datos)
 muestra  <- sample(n, n * .70)
 train    <- datos[muestra, ]
 test     <- datos[-muestra, ]
-
 
 # NORMALIZACION DE VARIABLES
 # -----------------------------------------------------
@@ -19,7 +22,6 @@ mins      <- apply(train, 2, min)
 datos_nrm <- as.data.frame(scale(datos, center = mins, scale = maxs - mins))
 train_nrm <- datos_nrm[muestra, ]
 test_nrm  <- datos_nrm[-muestra, ]
-
 
 # FORMULA
 # -----------------------------------------------------
@@ -38,7 +40,7 @@ modelo.nn <- neuralnet(frml,
 
 # PREDICCION
 # -----------------------------------------------------
-pr.nn   <- compute(modelo.nn,within(test_nrm,rm(exito))) # rm elimina la columna seleccionada
+pr.nn   <- compute(modelo.nn,within(test_nrm,rm(exito),rm(tasa))) # rm elimina la columna seleccionada
 
 # se transoforma el valor escalar al valor nominal original
 medv.predict <- pr.nn$net.result*(max(datos$exito)-min(datos$exito))+min(datos$exito)

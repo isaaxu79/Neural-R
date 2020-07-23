@@ -5,7 +5,7 @@ library(MASS); library(neuralnet); library(ggplot2); library(gridExtra);
 datos    <- read.table("prueba_con.csv",header=TRUE, sep=",")
 datos$exito=0
 datos[datos$tasa <= datos$tasa_esperada,]$exito = 1
-datos    <- datos[c(2,3,5,6,10)]
+datos    <- datos[c(2,3,5,6,8,10)]
 n        <- nrow(datos)
 muestra  <- sample(n, n * .70)
 train    <- datos[muestra, ]
@@ -32,8 +32,8 @@ frml <- as.formula(paste("exito ~", paste(nms[!nms %in% "exito"], collapse = " +
 modelo.nn <- neuralnet(frml,
                        data          = train_nrm,
                        hidden        = c(7,5), # ver Notas para detalle 
-                       threshold     = 0.0029,   # ver Notas para detalle
-                       act.fct="logistic")
+                       threshold     = 0.001,   # ver Notas para detalle
+                       algorithm     = "rprop+")
 
 
 # PREDICCION

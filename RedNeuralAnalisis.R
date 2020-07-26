@@ -37,7 +37,7 @@ modelo.nn <- neuralnet(frml,
                        threshold     = 0.001,   # ver Notas para detalle
                        algorithm     = "rprop+")
 
-
+View(modelo.nn$result.matrix)
 # PREDICCION
 # -----------------------------------------------------
 pr.nn   <- compute(modelo.nn,within(test_nrm,rm(exito),rm(tasa))) # rm elimina la columna seleccionada
@@ -50,6 +50,20 @@ medv.real    <- (test_nrm$exito)*(max(datos$exito)-min(datos$exito))+min(datos$e
 das <- data.frame(prediccion=sino, real=medv.real)
 test$prediccion = sino
 
+contV <- 0
+contf <- 0
+
+for(x in 1:length(sino)){
+  print(medv.real[x])
+  if(sino[x] == medv.real[x]){
+    contV = contV+1
+  }else {
+    contf = contf+1
+  }
+}
+contV = (contV*100)/26
+print("porcetaje de exito:")
+print(contV)
 
 plot(modelo.nn)
 p1 <- ggplot(test, aes(x=factor(mes), y=factor(nave), group=exito, colour=factor(exito))) + geom_point() + labs(title="Cumpliento esperado de la tasa de crecimiento por nave y por mes",
